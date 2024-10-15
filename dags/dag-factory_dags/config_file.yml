@@ -1,0 +1,106 @@
+default:
+  schedule_interval: '0 0 * * *'
+  catchup: False
+  template_searchpath: '/usr/local/airflow/include/dag_factory/'
+  default_args:
+    conn_id: 'postgres_default'
+    database: 'postgres'
+    owner: 'dag-factory'
+    retries: 1
+    start_date: '2024-01-01'
+    python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+  params:
+    schema_name: public
+    postgres_conn_id: postgres_default
+    coordinates:
+      latitude: 46.9481
+      longitude: 7.4474
+
+dag_factory_dag_etl_weather_code:
+  description: 'Get Weather Code'
+  params:
+    weather_api_url: https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=weather_code&timezone=auto
+    table_name: df_dag_weather_code
+    sql_dir: /usr/local/airflow/include/dag_factory/dag_factory_dag_etl_weather_code
+  tasks:
+    create_table_if_not_exists:
+      operator: airflow.providers.common.sql.operators.sql.SQLExecuteQueryOperator
+      sql: dag_factory_dag_etl_weather_code/create_table_if_not_exists.sql
+    extract:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: extract
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+    transform:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: transform_weather_code
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+      op_args:
+        ["{{ task_instance.xcom_pull(task_ids='extract') }}"]
+      dependencies: [extract]
+    load:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: load
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+      op_args:
+        ["{{ task_instance.xcom_pull(task_ids='transform') }}"]
+      dependencies: [transform, create_table_if_not_exists]
+
+
+dag_factory_dag_etl_sunrise:
+  description: 'Get Sunrise Time'
+  params:
+    weather_api_url: https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=sunrise&timezone=auto
+    table_name: df_dag_sunrise
+    sql_dir: /usr/local/airflow/include/dag_factory/dag_factory_dag_etl_sunrise
+  tasks:
+    create_table_if_not_exists:
+      operator: airflow.providers.common.sql.operators.sql.SQLExecuteQueryOperator
+      sql: dag_factory_dag_etl_sunrise/create_table_if_not_exists.sql
+    extract:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: extract
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+    transform:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: transform_sunrise
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+      op_args:
+        ["{{ task_instance.xcom_pull(task_ids='extract') }}"]
+      dependencies: [extract]
+    load:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: load
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+      op_args:
+        ["{{ task_instance.xcom_pull(task_ids='transform') }}"]
+      dependencies: [transform, create_table_if_not_exists]
+
+
+dag_factory_dag_etl_wind:
+  description: 'Get Max Wind Speed'
+  params:
+    weather_api_url: https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=wind_speed_10m_max&timezone=auto
+    table_name: df_dag_wind
+    sql_dir: /usr/local/airflow/include/dag_factory/dag_factory_dag_etl_wind
+  tasks:
+    create_table_if_not_exists:
+      operator: airflow.providers.common.sql.operators.sql.SQLExecuteQueryOperator
+      sql: dag_factory_dag_etl_wind/create_table_if_not_exists.sql
+    extract:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: extract
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+    transform:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: transform_wind
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+      op_args:
+        ["{{ task_instance.xcom_pull(task_ids='extract') }}"]
+      dependencies: [extract]
+    load:
+      operator: airflow.operators.python.PythonOperator
+      python_callable_name: load
+      python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
+      op_args:
+        ["{{ task_instance.xcom_pull(task_ids='transform') }}"]
+      dependencies: [transform, create_table_if_not_exists]

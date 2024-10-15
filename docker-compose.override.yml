@@ -1,0 +1,49 @@
+version: '3.1'
+services:
+  minio:
+    image: quay.io/minio/minio
+    networks:
+      - airflow
+    command: server /data --console-address ":9001"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - ${PWD}/include/minio:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  
+    restart: always
+    env_file: .env
+
+  postgres_data:
+    image: postgres:15.4-alpine
+    volumes:
+      - ${PWD}/include/postgres:/var/lib/postgresql/data
+    networks:
+      - airflow
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  scheduler:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  webserver:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  triggerer:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  postgres:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+networks:
+  airflow:
+    driver: bridge
