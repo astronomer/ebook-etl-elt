@@ -107,7 +107,7 @@ def elt_dtm():
 
     _get_sets_of_coordinates = get_sets_of_coordinates()
 
-    @task
+    @task(map_index_template="{{ my_custom_map_index }}")
     def extract(coordinates: dict):
         """
         Extract data from the Open-Meteo API
@@ -124,6 +124,14 @@ def elt_dtm():
         url = url.format(latitude=latitude, longitude=longitude)
 
         response = requests.get(url)
+
+        # optional custom map index (2.9+)
+        from airflow.operators.python import get_current_context
+
+        context = get_current_context()
+        context["my_custom_map_index"] = (
+            "Coordinates: " + str(latitude) + ", " + str(longitude)
+        )
 
         return response.json()
 
