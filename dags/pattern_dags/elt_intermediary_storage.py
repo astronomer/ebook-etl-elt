@@ -3,7 +3,7 @@
 
 This DAG extracts weather data from the Open-Meteo API, 
 loads it into a Postgres database and transforms it, using an ELT pattern.
-It passes the data through XComs between extract and transform.
+It passes the data through XCom between extract and transform.
 """
 
 import os
