@@ -28,8 +28,15 @@ This repository contains:
 - [`helper`](/dags//helper/): This folder contains two DAGs meant to help you explore and develop.
     - `query_tables`: A DAG that queries the tables in the Postgres database to return the number of records for each table.
     - `drop_tables_postgres`: A DAG that drops all the tables in the Postgres database.
-- [`modularized_task_groups`](/dags/modularized_task_groups/): This folder contains a DAG with a modularized task group.
+- [`modularized_task_groups`](/dags/modularized_task_groups/): This folder contains a DAG with a modularized task group, stored in [`include/custom_task_group/etl_task_group.py](/include/custom_task_group/etl_task_group.py).
 - [`pattern_dags`](/dags/pattern_dags/): Contains several DAGs showing different ETL and ELT patterns. They all use the Open Meteo API as a source system and load data to Postgres. 
+
+All supporting SQL code is stored in the include folder.
+
+- [`include/dag_factory`](/include/dag_factory/): Contains the SQL code for the 3 DAG factory tasks.
+- [`include/sql`](/include/sql/): Contains the SQL code for all other tasks.
+
+The SQL code is repetitive for demo purposes, meaning you can manipulate the code for just one DAG to explore the DAGs without affecting other DAGs. In a real-world scenario you would likely modularize the SQL code further and avoid repetition.
 
 ## How to run the demo
 
