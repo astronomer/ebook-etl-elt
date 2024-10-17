@@ -58,7 +58,7 @@ _SQL_DIR = os.path.join(
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params
     template_searchpath=[_SQL_DIR],  # path to the SQL templates
 )
-def etl_xcom():
+def etlt():
 
     # ---------------- #
     # Task Definitions #
@@ -185,4 +185,4 @@ def etl_xcom():
     chain(_create_table_if_not_exists, _load, _transform_in_target)
 
 
-etl_xcom()
+etlt()

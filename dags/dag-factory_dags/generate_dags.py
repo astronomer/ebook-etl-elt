@@ -1,4 +1,4 @@
-from airflow import DAG  ## by default, this is needed for the dagbag to parse this file
+# airflow, this is needed to Airflow will parse this file
 import dagfactory
 from pathlib import Path
 
