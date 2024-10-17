@@ -53,7 +53,7 @@ def query_tables_postgres():
         task_id="print_table_head",
         conn_id=_POSTGRES_CONN_ID,
         sql="""
-        SELECT * FROM {{ params.table_name }} ORDER BY last_updated DESC LIMIT 5 ;
+        SELECT * FROM {{ params.table_name }} LIMIT 5 ;
         """,
         show_return_value_in_logs=True,
     )

@@ -87,11 +87,19 @@ def elt_s3_to_sql():
     @task_group
     def tool_setup():
 
-        _create_table_if_not_exists = SQLExecuteQueryOperator(
-            task_id="create_table_if_not_exists",
+        _create_in_table_if_not_exists = SQLExecuteQueryOperator(
+            task_id="create_in_table_if_not_exists",
             conn_id=_POSTGRES_CONN_ID,
             database=_POSTGRES_DATABASE,
-            sql="create_table_if_not_exists.sql",
+            sql="create_in_table_if_not_exists.sql",
+            params={"schema": _POSTGRES_SCHEMA, "table": _POSTGRES_IN_TABLE},
+        )
+
+        _create_model_table_if_not_exists = SQLExecuteQueryOperator(
+            task_id="create_model_table_if_not_exists",
+            conn_id=_POSTGRES_CONN_ID,
+            database=_POSTGRES_DATABASE,
+            sql="create_model_table_if_not_exists.sql",
             params={"schema": _POSTGRES_SCHEMA, "table": _POSTGRES_TRANSFORMED_TABLE},
         )
 
@@ -101,7 +109,7 @@ def elt_s3_to_sql():
             aws_conn_id=_AWS_CONN_ID,
         )
 
-        return _create_table_if_not_exists, _create_bucket_if_not_exists
+        return _create_in_table_if_not_exists, _create_model_table_if_not_exists, _create_bucket_if_not_exists
 
     _tool_setup = tool_setup()
 
@@ -166,8 +174,9 @@ def elt_s3_to_sql():
     )
 
     chain(_extract, _load, _transform)
-    chain(_tool_setup[0], _load)
-    chain(_tool_setup[1], _extract)
+    chain(_tool_setup[0], _extract)
+    chain(_tool_setup[2], _extract)
+    chain(_tool_setup[1], _load)
 
 
 elt_s3_to_sql()

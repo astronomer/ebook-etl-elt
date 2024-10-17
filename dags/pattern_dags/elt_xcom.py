@@ -70,12 +70,20 @@ def elt_xcom():
     # see: https://www.astronomer.io/docs/learn/airflow-decorators for information about @task
     # see: https://www.astronomer.io/docs/learn/what-is-an-operator for information about traditional operators
 
-    _create_table_if_not_exists = SQLExecuteQueryOperator(
-        task_id="create_table_if_not_exists",
+    _create_in_table_if_not_exists = SQLExecuteQueryOperator(
+        task_id="create_in_table_if_not_exists",
         conn_id=_POSTGRES_CONN_ID,
         database=_POSTGRES_DATABASE,
-        sql="create_table_if_not_exists.sql",
+        sql="create_in_table_if_not_exists.sql",
         params={"schema": _POSTGRES_SCHEMA, "table": _POSTGRES_IN_TABLE},
+    )
+
+    _create_model_table_if_not_exists = SQLExecuteQueryOperator(
+        task_id="create_model_table_if_not_exists",
+        conn_id=_POSTGRES_CONN_ID,
+        database=_POSTGRES_DATABASE,
+        sql="create_model_table_if_not_exists.sql",
+        params={"schema": _POSTGRES_SCHEMA, "table": _POSTGRES_TRANSFORMED_TABLE},
     )
 
     @task
@@ -125,7 +133,8 @@ def elt_xcom():
         },
     )
 
-    chain([_create_table_if_not_exists, _extract], _load, _transform)
+    chain([_create_in_table_if_not_exists, _extract], _load, _transform)
+    chain(_create_model_table_if_not_exists, _transform)
 
 
 elt_xcom()

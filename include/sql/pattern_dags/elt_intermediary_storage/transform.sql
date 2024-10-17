@@ -1,4 +1,16 @@
-CREATE TABLE IF NOT EXISTS {{ params.schema }}.{{ params.out_table }} AS
+INSERT INTO {{ params.schema }}.{{ params.out_table }} (
+    timestamp,
+    date,
+    day,
+    month,
+    year,
+    temperature_2m,
+    relative_humidity_2m,
+    precipitation_probability,
+    last_updated,
+    latitude,
+    longitude
+)
 SELECT
     time_series.time AS timestamp,
     time_series.time::date AS date,
