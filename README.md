@@ -4,7 +4,7 @@ This repository contains the code for the webinar demo shown in: Best practices 
 
 [Watch the webinar here for free!](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
 
-This repository is configured to spin up 6 Docker containers when you run `astro dev start` (See [Install the Astro CLI]([Astro CLI](https://docs.astronomer.io/astro/cli/install-cli))). 
+This repository is configured to spin up 6 Docker containers when you run `astro dev start` (See [Install the Astro CLI](https://docs.astronomer.io/astro/cli/install-cli)). 
 
 The containers are:
 - Postgres, port 5432: Airflow's Metadata Database

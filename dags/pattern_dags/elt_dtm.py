@@ -57,7 +57,7 @@ _SQL_DIR = os.path.join(
             {
                 "Location 1": {"latitude": 46.9480, "longitude": 7.4474},
                 "Location 2": {"latitude": 38.4272, "longitude": 14.9524},
-                "Location 3": {"latitude": 46.9480, "longitude": 2.9916},
+                "Location 3": {"latitude": 46.9480, "longitude": -2.9916},
             },
             type="object",
         )
