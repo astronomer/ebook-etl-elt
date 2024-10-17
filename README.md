@@ -1,48 +1,59 @@
-Overview
-========
+# Best practices for writing ETL and ELT pipelines
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+This repository contains the code for the webinar demo shown in: Best practices for writing ETL and ELT pipelines.
 
-Project Contents
-================
+[Watch the webinar here for free!](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
 
-Your Astro project contains the following files and folders:
+This repository is configured to spin up 6 Docker containers when you run `astro dev start` (See [Install the Astro CLI]([Astro CLI](https://docs.astronomer.io/astro/cli/install-cli))). 
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
-
-Deploy Your Project Locally
-===========================
-
-1. Start Airflow on your local machine by running 'astro dev start'.
-
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
-
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
+The containers are:
+- Postgres, port 5432: Airflow's Metadata Database
+- Webserver, port 8080: The Airflow component responsible for rendering the Airflow UI
 - Scheduler: The Airflow component responsible for monitoring and triggering tasks
 - Triggerer: The Airflow component responsible for triggering deferred tasks
+- Postgres, port 5433: A Postgres database for the demo data
+- MinIO, port 9000: An S3-compatible object storage service for the demo data
 
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
+To connect Airflow to both the Postgres database and MinIO, create a `.env` file in the root directory of the project with the exact contents of the `.env.example` file. Note that you need to restart the Airflow instance with `astro dev restart` after creating the `.env` file for the changes to take effect.
 
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+All the DAGs run without any further setup or tools needed!
 
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
+## Content
 
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
+This repository contains:
 
-Deploy Your Project to Astronomer
-=================================
+- [`dag-factory_dags`](/dags/dag-factory_dags/): A folder containing the code necessary to generate 3 DAGs with the `dag-factory` package.
+    - `config_file.yml`: Config file creating the 3 DAGs.
+    - `generate_dags.py`: The code to generate DAGs from the config file.
+- [`helper`](/dags//helper/): This folder contains two DAGs meant to help you explore and develop.
+    - `query_tables`: A DAG that queries the tables in the Postgres database to return the number of records for each table.
+    - `drop_tables_postgres`: A DAG that drops all the tables in the Postgres database.
+- [`modularized_task_groups`](/dags/modularized_task_groups/): This folder contains a DAG with a modularized task group.
+- [`pattern_dags`](/dags/pattern_dags/): Contains several DAGs showing different ETL and ELT patterns. They all use the Open Meteo API as a source system and load data to Postgres. 
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+## How to run the demo
 
-Contact
-=======
+1. Fork and clone this repository.
+2. Make sure you have the [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli) installed and that [Docker](https://www.docker.com/products/docker-desktop) is running.
+3. Copy the `.env.example` file to a new file called `.env`. If you want to use a custom XCom backend with MinIO uncomment the last 4 lines in the `.env` file.
+4. Run `astro dev start` to start the Airflow instance. The webserver with the Airflow UI will be available at `localhost:8080`. Log in with the credentials `admin:admin`.
+5. Run any DAG. They all are independent from each other.
+7. Use the `query_tables` DAG to check the number of records in the tables.
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+If you'd like to directly interact with the Postgres database, you can use the following commands to connect to the database:
+
+```bash
+docker ps
+```
+
+This command will list all the running containers. Look for the container with the image `postgres:15.4-alpine`. Copy the container ID (in the format `30cfd7660be9`) and run the following command:
+
+```bash
+docker exec -it <container_id> psql -U postgres
+```
+
+You are now in a `psql` session connected to the Postgres database. You can list the tables with the command `\dt` and query the tables with `SELECT * FROM <table_name>;`.
+
+## Resources
+
+- [Best practices for writing ETL and ELT pipelines](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
