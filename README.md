@@ -16,7 +16,7 @@ The containers are:
 
 To connect Airflow to both the Postgres database and MinIO, create a `.env` file in the root directory of the project with the exact contents of the `.env.example` file. Note that you need to restart the Airflow instance with `astro dev restart` after creating the `.env` file for the changes to take effect.
 
-All the DAGs run without any further setup or tools needed!
+All the DAGs run without any further setup or tools needed! 
 
 ## Content
 
