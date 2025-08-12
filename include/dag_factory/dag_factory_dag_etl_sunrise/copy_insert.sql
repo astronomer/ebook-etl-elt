@@ -11,8 +11,8 @@ FROM STDIN WITH CSV HEADER;
 INSERT INTO {schema}.{table} 
 (date, day, month, year, sunrise, last_updated, latitude, longitude, elevation, utc_offset_seconds, timezone, timezone_abbreviation)
 SELECT 
-    date, 
-    day,
+    date,
+    day, 
     month,
     year,
     sunrise, 

@@ -1,5 +1,4 @@
-from airflow.utils.task_group import TaskGroup
-from airflow.decorators import task
+from airflow.sdk import TaskGroup, task
 
 
 class MyETLTaskGroup(TaskGroup):
