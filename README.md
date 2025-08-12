@@ -4,10 +4,10 @@ This repository contains the code for the webinar demo shown in: Best practices 
 
 [Watch the webinar here for free!](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
 
-> [!INFO]
+> [!TIP]
 > The DAGs in this webinar have been updated for Airflow 3, the webinar above showed them running in Airflow 2. 
 
-This repository is configured to spin up 7 Docker containers when you run `astro dev start` (See [Install the Astro CLI](https://docs.astronomer.io/astro/cli/install-cli)). 
+This repository is configured to spin up 7 Docker containers when you run `astro dev start` (See [Install the Astro CLI](https://docs.astronomer.io/astro/cli/install-cli)). if you cannot use the Astro CLI see [Running the demo in GH codespaces](#running-the-demo-in-gh-codespaces).
 
 The containers are:
 - Postgres, port 5432: Airflow's Metadata Database
@@ -20,7 +20,7 @@ The containers are:
 
 To connect Airflow to both the Postgres database and MinIO, create a `.env` file in the root directory of the project with the exact contents of the `.env.example` file. Note that you need to restart the Airflow instance with `astro dev restart` after creating the `.env` file for the changes to take effect.
 
-> [!INFO]
+> [!TIP]
 > You need to be on at least version 1.34.0 of the Astro CLI in oder to run this repo. You can check your version with `astro version` and upgrade with `brew upgrade astro`
 
 All the DAGs run without any further setup or tools needed! 
@@ -73,3 +73,36 @@ You are now in a `psql` session connected to the Postgres database. You can list
 - Ebook: [Apache Airflow® Best Practices for ETL and ELT Pipelines](https://www.astronomer.io/ebooks/apache-airflow-best-practices-etl-elt-pipelines/)
 - Webinar: [Best practices for writing ETL and ELT pipelines](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
 - Book on Airflow 3: [Practical Guide to Apache Airflow® 3](https://www.astronomer.io/ebooks/practical-guide-to-apache-airflow-3/)
+
+# Running the demo in GH codespaces
+
+If you can't install the CLI, you can run the project from your forked repo using GitHub Codespaces.
+
+1. Fork this repository
+2. Click on the green "Code" button and select the "Codespaces" tab. 
+3. Click on the 3 dots and then `+ New with options...` to create a new Codespace with a configuration, make sure to select a Machine type of at least `8-core`.
+
+   ![Start GH Codespaces](img/start_codespaces.png)
+
+4. Copy the `.env.example` file to a new file called `.env`. If you want to use a custom XCom backend with MinIO uncomment the last 4 lines in the `.env` file.
+
+5. Run `astro dev start -n --wait 5m` in the Codespaces terminal to start the Airflow environment using the Astro CLI. This can take a few minutes.
+
+   ![Start the Astro CLI in Codespaces](img/codespaces_start_astro.png)
+
+   Once you see the following printed to your terminal, the Airflow environment is ready to use:
+
+   ```text
+   ✔ Project image has been updated
+   ✔ Project started
+   ➤ Airflow UI: http://localhost:8080
+   ➤ Postgres Database: postgresql://localhost:5435/postgres
+   ➤ The default Postgres DB credentials are: postgres:postgres
+   ```
+
+6. Once the Airflow project has started, access the Airflow UI by clicking on the Ports tab and opening the forward URL for port `8080`.
+
+> [!TIP]
+> If when accessing the forward URL you get an error like `{"detail":"Invalid or unsafe next URL"}`, you will need to modify the forwarded URL. Delete everything forward of `next=....` (this should be after `/login?`, ). The URL will update, adn then remove `:8080`, so your URL should endd in `.app.github.dev`
+
+7. Log into the Airflow UI. It is possible that after logging in you see an error, in this case you have to open the URL again from the ports tab.

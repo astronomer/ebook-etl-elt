@@ -16,5 +16,9 @@
         "5432": {
             "label": "postgres"
         }
+    },
+    "hostRequirements": {
+        "cpus": 8,
+        "memory": "64gb"
     }
 }
