@@ -48,7 +48,7 @@ _SQL_DIR = os.path.join(
         "retries": 3,  # tasks retry 3 times before they fail
         "retry_delay": timedelta(seconds=30),  # tasks wait 30s in between retries
     },
-    tags=["Patterns", "ELT", "Postgres", "XCom"],  # add tags in the UI
+    tags=["Patterns", "ELT", "XCom"],  # add tags in the UI
     params={
         "set_of_coordinates": Param(
             {

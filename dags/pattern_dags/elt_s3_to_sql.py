@@ -62,7 +62,7 @@ def _parse_json(filepath):
         "retries": 3,  # tasks retry 3 times before they fail
         "retry_delay": timedelta(seconds=30),  # tasks wait 30s in between retries
     },
-    tags=["Patterns", "ELT", "Postgres", "S3"],  # add tags in the UI
+    tags=["Patterns", "ELT", "S3"],  # add tags in the UI
     params={
         "coordinates": Param({"latitude": 46.9481, "longitude": 7.4474}, type="object")
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params

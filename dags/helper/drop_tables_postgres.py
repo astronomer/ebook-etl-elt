@@ -12,7 +12,7 @@ _POSTGRES_CONN_ID = "postgres_default"
 
 @dag(
     dag_display_name="🛠️ Helper: Drop Tables",
-    tags=["helper", "Postgres"],
+    tags=["helper"],
 )
 def drop_tables_postgres():
 

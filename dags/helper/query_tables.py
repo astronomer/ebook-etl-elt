@@ -14,7 +14,7 @@ _TABLE_NAME = "in_weather_data_elt_xcom"
 
 @dag(
     dag_display_name="🛠️ Helper: Query Tables",
-    tags=["helper", "Postgres"],
+    tags=["helper"],
     params={"table_name": _TABLE_NAME},
 )
 def query_tables_postgres():
