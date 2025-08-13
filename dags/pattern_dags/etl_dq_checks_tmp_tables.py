@@ -16,14 +16,13 @@ This DAG will perform the following steps:
 import os
 from datetime import datetime, timedelta
 
-from airflow.decorators import dag, task, task_group
-from airflow.models.baseoperator import chain
-from airflow.models.param import Param
+from airflow.sdk import dag, task, task_group, chain, Param
 from airflow.providers.common.sql.operators.sql import (
     SQLColumnCheckOperator,
     SQLExecuteQueryOperator,
     SQLTableCheckOperator,
 )
+from include.col_orders import WEATHER_COL_ORDER
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
 
@@ -46,9 +45,8 @@ _SQL_DIR = os.path.join(
 
 @dag(
     dag_id=DAG_ID,
-    start_date=datetime(2024, 9, 23),  # date after which the DAG can be scheduled
+    start_date=datetime(2025, 8, 1),  # date after which the DAG can be scheduled
     schedule="@daily",  # see: https://www.astronomer.io/docs/learn/scheduling-in-airflow for options
-    catchup=False,  # see: https://www.astronomer.io/docs/learn/rerunning-dags#catchup
     max_active_runs=1,  # maximum number of active DAG runs
     max_consecutive_failed_dag_runs=5,  # auto-pauses the DAG after 5 consecutive failed runs, experimental
     doc_md=__doc__,  # add DAG Docs in the UI, see https://www.astronomer.io/docs/learn/custom-airflow-ui-docs-tutorial
@@ -59,7 +57,7 @@ _SQL_DIR = os.path.join(
         "postgres_conn_id": _POSTGRES_CONN_ID,
         "conn_id": _POSTGRES_CONN_ID,
     },
-    tags=["Patterns", "ETL", "Postgres", "XCom"],  # add tags in the UI
+    tags=["Patterns", "ETL", "XCom"],  # add tags in the UI
     params={
         "coordinates": Param({"latitude": 46.9481, "longitude": 7.4474}, type="object")
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params
@@ -150,8 +148,8 @@ def etl_dq_checks_tmp_tables():
 
             csv_buffer = io.StringIO()
             writer = csv.writer(csv_buffer)
-            writer.writerow(transformed_data.keys())
-            rows = zip(*transformed_data.values())
+            writer.writerow(WEATHER_COL_ORDER)
+            rows = zip(*[transformed_data[col] for col in WEATHER_COL_ORDER])
             writer.writerows(rows)
 
             csv_buffer.seek(0)

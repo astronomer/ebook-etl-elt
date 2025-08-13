@@ -1,7 +1,7 @@
 """
 ## Simple ELT DAG loading data from the Open-Meteo API to a Postgres database
 
-This DAG extracts weather data from the Open-Meteo API, 
+This DAG extracts weather data from the Open-Meteo API,
 loads it into a Postgres database and transforms it, using an ELT pattern.
 It passes the data through XCom between extract and transform.
 """
@@ -11,9 +11,7 @@ import json
 from datetime import datetime, timedelta
 
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from airflow.decorators import dag, task
-from airflow.models.baseoperator import chain
-from airflow.models.param import Param
+from airflow.sdk import dag, task, chain, Param
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
@@ -47,9 +45,8 @@ _EXTRACT_TASK_ID = "extract"
 
 @dag(
     dag_id=DAG_ID,
-    start_date=datetime(2024, 9, 23),  # date after which the DAG can be scheduled
+    start_date=datetime(2025, 8, 1),  # date after which the DAG can be scheduled
     schedule="@daily",  # see: https://www.astronomer.io/docs/learn/scheduling-in-airflow for options
-    catchup=False,  # see: https://www.astronomer.io/docs/learn/rerunning-dags#catchup
     max_active_runs=1,  # maximum number of active DAG runs
     max_consecutive_failed_dag_runs=5,  # auto-pauses the DAG after 5 consecutive failed runs, experimental
     doc_md=__doc__,  # add DAG Docs in the UI, see https://www.astronomer.io/docs/learn/custom-airflow-ui-docs-tutorial
@@ -58,7 +55,7 @@ _EXTRACT_TASK_ID = "extract"
         "retries": 3,  # tasks retry 3 times before they fail
         "retry_delay": timedelta(seconds=30),  # tasks wait 30s in between retries
     },
-    tags=["Patterns", "ELT", "Postgres", "XCom"],  # add tags in the UI
+    tags=["Patterns", "ELT", "XCom"],  # add tags in the UI
     params={
         "coordinates": Param({"latitude": 46.9481, "longitude": 7.4474}, type="object")
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params

@@ -2,6 +2,12 @@ import os
 from datetime import datetime
 import json
 
+from include.col_orders import (
+    SUNRISE_COL_ORDER,
+    WEATHER_CODE_COL_ORDER,
+    WIND_COL_ORDER,
+)
+
 
 def extract(**context):
     """
@@ -158,10 +164,17 @@ def load(transformed_data: dict, **context):
 
     hook = PostgresHook(postgres_conn_id=postgres_conn_id)
 
+    if context["dag_run"].dag_id == "dag_factory_dag_etl_sunrise":
+        col_order = SUNRISE_COL_ORDER
+    elif context["dag_run"].dag_id == "dag_factory_dag_etl_weather_code":
+        col_order = WEATHER_CODE_COL_ORDER
+    elif context["dag_run"].dag_id == "dag_factory_dag_etl_wind":
+        col_order = WIND_COL_ORDER
+
     csv_buffer = io.StringIO()
     writer = csv.writer(csv_buffer)
-    writer.writerow(transformed_data.keys())
-    rows = zip(*transformed_data.values())
+    writer.writerow(col_order)
+    rows = zip(*[transformed_data[col] for col in col_order])
     writer.writerows(rows)
 
     csv_buffer.seek(0)

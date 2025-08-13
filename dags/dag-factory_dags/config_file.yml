@@ -1,13 +1,12 @@
 default:
-  schedule_interval: '0 0 * * *'
-  catchup: False
+  schedule: '0 0 * * *'
   template_searchpath: '/usr/local/airflow/include/dag_factory/'
   default_args:
     conn_id: 'postgres_default'
     database: 'postgres'
     owner: 'dag-factory'
     retries: 1
-    start_date: '2024-01-01'
+    start_date: '2025-08-01'
     python_callable_file: /usr/local/airflow/include/dag_factory/python_func.py
   params:
     schema_name: public

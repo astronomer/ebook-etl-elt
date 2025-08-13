@@ -1,35 +1,32 @@
 """
 ## Helper DAG to query all tables in the Postgres database
 
-Queries both the number of records as well as the first 5 records of one of 
+Queries both the number of records as well as the first 5 records of one of
 the tables in the Postgres database.
 """
 
-from airflow.decorators import dag
+from airflow.sdk import dag, chain
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
-from airflow.models.baseoperator import chain
 
 _POSTGRES_CONN_ID = "postgres_default"
-_TABLE_NAME = "in_weather_data_etl_xcom"
+_TABLE_NAME = "in_weather_data_elt_xcom"
 
 
 @dag(
     dag_display_name="🛠️ Helper: Query Tables",
-    start_date=None,
-    schedule=None,
-    catchup=False,
-    tags=["helper", "Postgres"],
+    tags=["helper"],
     params={"table_name": _TABLE_NAME},
 )
 def query_tables_postgres():
 
-    get_list_of_tables = SQLExecuteQueryOperator(
+    _get_list_of_tables = SQLExecuteQueryOperator(
         task_id="get_list_of_tables",
         conn_id=_POSTGRES_CONN_ID,
         sql="SELECT table_name FROM information_schema.tables WHERE table_schema='public'",
+        show_return_value_in_logs=True,
     )
 
-    get_num_records = SQLExecuteQueryOperator(
+    _get_num_records = SQLExecuteQueryOperator(
         task_id="get_num_records",
         conn_id=_POSTGRES_CONN_ID,
         sql="""
@@ -49,7 +46,7 @@ def query_tables_postgres():
         show_return_value_in_logs=True,
     )
 
-    print_table_head = SQLExecuteQueryOperator(
+    _print_table_head = SQLExecuteQueryOperator(
         task_id="print_table_head",
         conn_id=_POSTGRES_CONN_ID,
         sql="""
@@ -58,7 +55,7 @@ def query_tables_postgres():
         show_return_value_in_logs=True,
     )
 
-    chain(get_list_of_tables, get_num_records)
+    chain(_get_list_of_tables, _get_num_records, _print_table_head)
 
 
 query_tables_postgres()

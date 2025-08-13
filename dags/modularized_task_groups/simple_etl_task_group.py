@@ -1,12 +1,8 @@
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from include.custom_task_group.etl_task_group import MyETLTaskGroup
 
 
-@dag(
-    start_date=None,
-    schedule=None,
-    catchup=False,
-)
+@dag
 def simple_etl_task_group():
     @task
     def get_url():

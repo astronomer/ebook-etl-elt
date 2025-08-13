@@ -2,20 +2,20 @@ CREATE TEMP TABLE tmp_weather_data AS
 SELECT * FROM {schema}.{table} LIMIT 0;
 
 COPY tmp_weather_data 
-(temperature_2m, relative_humidity_2m, precipitation_probability, timestamp, date, day, month, year, last_updated, latitude, longitude)
+(timestamp, date, day, month, year, temperature_2m, relative_humidity_2m, precipitation_probability, last_updated, latitude, longitude)
 FROM STDIN WITH CSV HEADER;
 
 INSERT INTO {schema}.{table} 
-(temperature_2m, relative_humidity_2m, precipitation_probability, timestamp, date, day, month, year, last_updated, latitude, longitude)
+(timestamp, date, day, month, year, temperature_2m, relative_humidity_2m, precipitation_probability, last_updated, latitude, longitude)
 SELECT 
-    temperature_2m, 
-    relative_humidity_2m, 
-    precipitation_probability, 
     timestamp, 
     date, 
     day, 
     month, 
     year, 
+    temperature_2m, 
+    relative_humidity_2m, 
+    precipitation_probability, 
     last_updated, 
     latitude, 
     longitude
