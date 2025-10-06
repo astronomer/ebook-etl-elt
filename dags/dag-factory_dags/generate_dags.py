@@ -1,9 +1,14 @@
-# airflow, this is needed to Airflow will parse this file
-import dagfactory
+import os
 from pathlib import Path
 
-config_file = Path.cwd() / "dags/dag-factory_dags/config_file.yml"
-dag_factory = dagfactory.DagFactory(config_file)
+from dagfactory import load_yaml_dags
 
-dag_factory.clean_dags(globals())
-dag_factory.generate_dags(globals())
+DEFAULT_CONFIG_ROOT_DIR = "/usr/local/airflow/dags/"
+CONFIG_ROOT_DIR = Path(os.getenv("CONFIG_ROOT_DIR", DEFAULT_CONFIG_ROOT_DIR))
+
+config_file = str(CONFIG_ROOT_DIR / "dag-factory_dags/config_file.yml")
+
+load_yaml_dags(
+    globals_dict=globals(),
+    config_filepath=config_file,
+)

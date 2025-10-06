@@ -1,13 +1,12 @@
 # Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
 # The following are extra provider packages for this demo. They are pinned at the latest version available in September 2024,
 # see https://airflow.apache.org/docs/ for the latest versions.
-apache-airflow-providers-amazon==9.12.0
+apache-airflow-providers-amazon==9.15.0
 apache-airflow-providers-apprise==2.1.2
-apache-airflow-providers-common-io==1.6.2
-apache-airflow-providers-common-sql==1.27.5
-apache-airflow-providers-databricks==7.7.1
-apache-airflow-providers-google==17.1.0
-apache-airflow-providers-microsoft-azure==12.6.1
-apache-airflow-providers-postgres==6.2.3
-apache-airflow-providers-snowflake==6.5.2
-dag-factory==0.23.0
+apache-airflow-providers-common-io==1.6.3
+apache-airflow-providers-common-sql==1.28.1
+apache-airflow-providers-google==18.0.0
+apache-airflow-providers-microsoft-azure==12.7.1
+apache-airflow-providers-postgres==6.3.0
+apache-airflow-providers-snowflake==6.5.4
+dag-factory==1.0.1
