@@ -39,7 +39,7 @@ _POSTGRES_BACKUP_TABLE = os.getenv(
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
+_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/pattern_dags/{DAG_ID}"
 
 
 @dag(
@@ -60,7 +60,7 @@ _SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
     params={
         "coordinates": Param({"latitude": 46.9481, "longitude": 7.4474}, type="object")
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params
-    template_searchpath=[_SQL_DIR],  # path to the SQL templates
+    template_searchpath=[str(_SQL_DIR)],  # path to the SQL templates
 )
 def etl_dq_checks_tmp_tables():
 
@@ -153,7 +153,7 @@ def etl_dq_checks_tmp_tables():
 
             csv_buffer.seek(0)
 
-            with open(f"{_SQL_DIR}/copy_insert.sql") as f:
+            with open(f"{str(_SQL_DIR)}/copy_insert.sql") as f:
                 sql = f.read()
             sql = sql.replace("{schema}", _POSTGRES_SCHEMA)
             sql = sql.replace("{table}", _POSTGRES_TMP_TABLE)

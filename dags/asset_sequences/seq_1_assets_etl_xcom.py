@@ -29,7 +29,7 @@ _POSTGRES_SCHEMA = os.getenv("POSTGRES_SCHEMA", "public")
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{SEQUENCE_NAME}"
 )
-_SQL_DIR = f"include/sql/asset_sequences/{SEQUENCE_NAME}"
+_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/asset_sequences/{SEQUENCE_NAME}"
 
 
 # First asset definition
@@ -58,7 +58,7 @@ def seq_1_create_table(context):
 
     hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-    with open(f"{_SQL_DIR}/create_table_if_not_exists.sql", "r") as f:
+    with open(f"{str(_SQL_DIR)}/create_table_if_not_exists.sql", "r") as f:
         sql_template = f.read()
 
     template = Template(sql_template)
@@ -207,7 +207,7 @@ def seq_1_load(context):
 
     csv_buffer.seek(0)
 
-    with open(f"{_SQL_DIR}/copy_insert.sql") as f:
+    with open(f"{str(_SQL_DIR)}/copy_insert.sql") as f:
         sql = f.read()
     sql = sql.replace("{schema}", _POSTGRES_SCHEMA)
     sql = sql.replace("{table}", _POSTGRES_TRANSFORMED_TABLE)

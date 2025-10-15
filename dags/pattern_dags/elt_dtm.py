@@ -27,7 +27,7 @@ _POSTGRES_IN_TABLE = os.getenv("POSTGRES_WEATHER_TABLE_IN", f"in_weather_data_{D
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
+_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/pattern_dags/{DAG_ID}"
 
 
 # -------------- #
@@ -58,7 +58,7 @@ _SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
             type="object",
         )
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params
-    template_searchpath=[_SQL_DIR],  # path to the SQL templates
+    template_searchpath=[str(_SQL_DIR)],  # path to the SQL templates
 )
 def elt_dtm():
 

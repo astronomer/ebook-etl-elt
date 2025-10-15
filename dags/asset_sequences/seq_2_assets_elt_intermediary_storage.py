@@ -33,7 +33,7 @@ _POSTGRES_IN_TABLE = os.getenv("POSTGRES_WEATHER_TABLE_IN", f"in_weather_data_{D
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = f"include/sql/asset_sequences/{DAG_ID}"
+_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/asset_sequences/{DAG_ID}"
 
 _INTERMEDIARY_STORAGE_KEY = "seq_2_extract"
 
@@ -65,7 +65,7 @@ def seq_2_create_in_table(context):
 
     hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-    with open(f"{_SQL_DIR}/create_in_table_if_not_exists.sql", "r") as f:
+    with open(f"{str(_SQL_DIR)}/create_in_table_if_not_exists.sql", "r") as f:
         sql_template = f.read()
 
     template = Template(sql_template)
@@ -85,7 +85,7 @@ def seq_2_create_model_table(context):
 
     hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-    with open(f"{_SQL_DIR}/create_model_table_if_not_exists.sql", "r") as f:
+    with open(f"{str(_SQL_DIR)}/create_model_table_if_not_exists.sql", "r") as f:
         sql_template = f.read()
 
     template = Template(sql_template)
@@ -196,7 +196,7 @@ def seq_2_transform(context):
 
     hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-    with open(f"{_SQL_DIR}/transform.sql", "r") as f:
+    with open(f"{str(_SQL_DIR)}/transform.sql", "r") as f:
         sql_template = f.read()
 
     template = Template(sql_template)
