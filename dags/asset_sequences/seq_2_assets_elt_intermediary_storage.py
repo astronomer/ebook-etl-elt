@@ -33,9 +33,7 @@ _POSTGRES_IN_TABLE = os.getenv("POSTGRES_WEATHER_TABLE_IN", f"in_weather_data_{D
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = os.path.join(
-    Path(__file__).parents[2], f"include/sql/asset_sequences/{DAG_ID}"
-)
+_SQL_DIR = f"include/sql/asset_sequences/{DAG_ID}"
 
 _INTERMEDIARY_STORAGE_KEY = "seq_2_extract"
 

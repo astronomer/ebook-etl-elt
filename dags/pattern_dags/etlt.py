@@ -29,9 +29,7 @@ _POSTGRES_TRANSFORMED_TABLE = os.getenv(
 _POSTGRES_SECONDARY_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_SECONDARY", f"secondary_weather_data_{DAG_ID}"
 )
-_SQL_DIR = os.path.join(
-    Path(__file__).parents[2], f"include/sql/pattern_dags/{DAG_ID}"
-)
+_SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
 
 
 # -------------- #

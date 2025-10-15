@@ -32,9 +32,7 @@ _POSTGRES_SCHEMA = os.getenv("POSTGRES_SCHEMA", "public")
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = os.path.join(
-    Path(__file__).parents[2], f"include/sql/pattern_dags/{DAG_ID}"
-)
+_SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
 
 _EXTRACT_TASK_ID = "extract"
 _TRANSFORM_TASK_ID = "transform"

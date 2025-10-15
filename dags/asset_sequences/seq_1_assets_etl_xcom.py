@@ -29,9 +29,7 @@ _POSTGRES_SCHEMA = os.getenv("POSTGRES_SCHEMA", "public")
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{SEQUENCE_NAME}"
 )
-_SQL_DIR = os.path.join(
-    Path(__file__).parents[2], f"include/sql/asset_sequences/{SEQUENCE_NAME}"
-)
+_SQL_DIR = f"include/sql/asset_sequences/{SEQUENCE_NAME}"
 
 
 # First asset definition
