@@ -48,7 +48,7 @@ _SQL_DIR = f"include/sql/pattern_dags/{DAG_ID}"
         "retries": 3,  # tasks retry 3 times before they fail
         "retry_delay": timedelta(seconds=30),  # tasks wait 30s in between retries
     },
-    tags=["Patterns", "ELT", "XCom"],  # add tags in the UI
+    tags=["Patterns", "ELT", "XCom", "idempotency"],  # add tags in the UI
     params={
         "coordinates": Param({"latitude": 46.9481, "longitude": 7.4474}, type="object")
     },  # Airflow params can add interactive options on manual runs. See: https://www.astronomer.io/docs/learn/airflow-params
@@ -128,6 +128,9 @@ def elt_xcom():
             "in_table": _POSTGRES_IN_TABLE,
             "out_table": _POSTGRES_TRANSFORMED_TABLE,
         },
+        parameters={
+            "last_updated": "{{ ts }}",
+        }
     )
 
     chain([_create_in_table_if_not_exists, _extract], _load, _transform)

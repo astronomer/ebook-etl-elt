@@ -8,7 +8,7 @@ SELECT
     time_series.temperature_2m,
     time_series.relative_humidity_2m,
     time_series.precipitation_probability,
-    NOW() AS last_updated,
+    %(last_updated)s AS last_updated,
     (raw_data->>'latitude')::NUMERIC AS latitude,
     (raw_data->>'longitude')::NUMERIC AS longitude
 FROM
