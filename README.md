@@ -2,7 +2,7 @@
 
 This repository contains the code for the webinar demo shown in: Best practices for writing ETL and ELT pipelines.
 
-[Watch the webinar here for free!](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
+[Watch the webinar here for free!](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-elt-pipelines-video)
 
 > [!TIP]
 > The DAGs in this webinar have been updated for Airflow 3, the webinar above showed them running in Airflow 2. 
@@ -71,7 +71,7 @@ You are now in a `psql` session connected to the Postgres database. You can list
 ## Resources
 
 - Ebook: [Apache Airflow® Best Practices for ETL and ELT Pipelines](https://www.astronomer.io/ebooks/apache-airflow-best-practices-etl-elt-pipelines/)
-- Webinar: [Best practices for writing ETL and ELT pipelines](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-and-elt-pipelines-video/)
+- Webinar: [Best practices for writing ETL and ELT pipelines](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-elt-pipelines-video)
 - Book on Airflow 3: [Practical Guide to Apache Airflow® 3](https://www.astronomer.io/ebooks/practical-guide-to-apache-airflow-3/)
 
 # Running the demo in GH codespaces
