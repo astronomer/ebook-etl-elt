@@ -4,9 +4,6 @@ This repository contains the code for the webinar demo shown in: Best practices 
 
 [Watch the webinar here for free!](https://www.astronomer.io/events/webinars/best-practices-for-writing-etl-elt-pipelines-video)
 
-> [!TIP]
-> The DAGs in this webinar have been updated for Airflow 3, the webinar above showed them running in Airflow 2. 
-
 This repository is configured to spin up 7 Docker containers when you run `astro dev start` (See [Install the Astro CLI](https://docs.astronomer.io/astro/cli/install-cli)). if you cannot use the Astro CLI see [Running the demo in GH codespaces](#running-the-demo-in-gh-codespaces).
 
 The containers are:
