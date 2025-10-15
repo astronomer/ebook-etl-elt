@@ -11,6 +11,7 @@ asset events.
 
 import os
 import json
+from pathlib import Path
 
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.sdk import Param, asset, Metadata, Asset
@@ -33,7 +34,7 @@ _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
 _SQL_DIR = os.path.join(
-    os.path.dirname(__file__), f"../../include/sql/asset_sequences/{DAG_ID}"
+    Path(__file__).parents[2], f"include/sql/asset_sequences/{DAG_ID}"
 )
 
 _INTERMEDIARY_STORAGE_KEY = "seq_2_extract"

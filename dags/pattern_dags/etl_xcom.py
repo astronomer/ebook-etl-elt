@@ -7,6 +7,7 @@ It passes the data through XComs.
 """
 
 import os
+from pathlib import Path
 from datetime import datetime, timedelta
 
 from airflow.sdk import dag, task, chain, Param
@@ -26,7 +27,7 @@ _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
 _SQL_DIR = os.path.join(
-    os.path.dirname(__file__), f"../../include/sql/pattern_dags/{DAG_ID}"
+    Path(__file__).parents[2], f"include/sql/pattern_dags/{DAG_ID}"
 )
 
 

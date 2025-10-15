@@ -7,6 +7,7 @@ Note that it uses XComs to pass data between tasks.
 """
 
 import os
+from pathlib import Path
 from datetime import datetime, timedelta
 
 from airflow.sdk import dag, task, chain, Param
@@ -29,7 +30,7 @@ _POSTGRES_SECONDARY_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_SECONDARY", f"secondary_weather_data_{DAG_ID}"
 )
 _SQL_DIR = os.path.join(
-    os.path.dirname(__file__), f"../../include/sql/pattern_dags/{DAG_ID}"
+    Path(__file__).parents[2], f"include/sql/pattern_dags/{DAG_ID}"
 )
 
 
