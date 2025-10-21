@@ -14,7 +14,6 @@ This DAG will perform the following steps:
 """
 
 import os
-from pathlib import Path
 from datetime import datetime, timedelta
 
 from airflow.sdk import dag, task, task_group, chain, Param
@@ -39,7 +38,7 @@ _POSTGRES_BACKUP_TABLE = os.getenv(
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/pattern_dags/{DAG_ID}"
+_SQL_DIR = f"{os.getenv('AIRFLOW_HOME')}/include/sql/pattern_dags/{DAG_ID}"
 
 
 @dag(

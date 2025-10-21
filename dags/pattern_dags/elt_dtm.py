@@ -8,7 +8,6 @@ It extracts data from 3 different locations in parallel using dynamic task mappi
 
 import json
 import os
-from pathlib import Path
 from datetime import datetime, timedelta
 
 from airflow.sdk import dag, task, chain, Param
@@ -27,7 +26,7 @@ _POSTGRES_IN_TABLE = os.getenv("POSTGRES_WEATHER_TABLE_IN", f"in_weather_data_{D
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/pattern_dags/{DAG_ID}"
+_SQL_DIR = f"{os.getenv('AIRFLOW_HOME')}/include/sql/pattern_dags/{DAG_ID}"
 
 
 # -------------- #

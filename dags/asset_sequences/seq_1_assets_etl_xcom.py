@@ -10,7 +10,6 @@ asset events.
 """
 
 import os
-from pathlib import Path
 from datetime import datetime
 
 from airflow.sdk import Param, asset, Metadata, Asset
@@ -29,7 +28,7 @@ _POSTGRES_SCHEMA = os.getenv("POSTGRES_SCHEMA", "public")
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{SEQUENCE_NAME}"
 )
-_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/asset_sequences/{SEQUENCE_NAME}"
+_SQL_DIR = f"{os.getenv('AIRFLOW_HOME')}/include/sql/asset_sequences/{SEQUENCE_NAME}"
 
 
 # First asset definition

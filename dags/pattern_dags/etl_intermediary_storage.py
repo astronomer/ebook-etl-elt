@@ -8,7 +8,6 @@ It uses S3 as an intermediary storage.
 
 import json
 import os
-from pathlib import Path
 from datetime import datetime, timedelta
 
 import requests
@@ -32,7 +31,7 @@ _POSTGRES_SCHEMA = os.getenv("POSTGRES_SCHEMA", "public")
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
     "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
 )
-_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/pattern_dags/{DAG_ID}"
+_SQL_DIR = f"{os.getenv('AIRFLOW_HOME')}/include/sql/pattern_dags/{DAG_ID}"
 
 _EXTRACT_TASK_ID = "extract"
 _TRANSFORM_TASK_ID = "transform"

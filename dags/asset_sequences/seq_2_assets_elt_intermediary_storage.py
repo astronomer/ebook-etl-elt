@@ -11,7 +11,6 @@ asset events.
 
 import os
 import json
-from pathlib import Path
 
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.sdk import Param, asset, Metadata, Asset
@@ -21,7 +20,7 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 # DAG-level variables #
 # ------------------- #
 
-DAG_ID = os.path.basename(__file__).replace(".py", "")
+SEQUENCE_NAME = os.path.basename(__file__).replace(".py", "")
 
 _AWS_CONN_ID = os.getenv("MINIO_CONN_ID", "minio_local")
 _S3_BUCKET = os.getenv("S3_BUCKET", "open-meteo-etl")
@@ -29,11 +28,11 @@ _S3_BUCKET = os.getenv("S3_BUCKET", "open-meteo-etl")
 _POSTGRES_CONN_ID = os.getenv("POSTGRES_CONN_ID", "postgres_default")
 _POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE", "postgres")
 _POSTGRES_SCHEMA = os.getenv("POSTGRES_SCHEMA", "public")
-_POSTGRES_IN_TABLE = os.getenv("POSTGRES_WEATHER_TABLE_IN", f"in_weather_data_{DAG_ID}")
+_POSTGRES_IN_TABLE = os.getenv("POSTGRES_WEATHER_TABLE_IN", f"in_weather_data_{SEQUENCE_NAME}")
 _POSTGRES_TRANSFORMED_TABLE = os.getenv(
-    "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{DAG_ID}"
+    "POSTGRES_WEATHER_TABLE_TRANSFORMED", f"model_weather_data_{SEQUENCE_NAME}"
 )
-_SQL_DIR = Path(os.getenv("AIRFLOW_HOME")) / "include" / f"sql/asset_sequences/{DAG_ID}"
+_SQL_DIR = f"{os.getenv('AIRFLOW_HOME')}/include/sql/asset_sequences/{SEQUENCE_NAME}"
 
 _INTERMEDIARY_STORAGE_KEY = "seq_2_extract"
 
