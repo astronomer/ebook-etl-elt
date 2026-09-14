@@ -106,7 +106,7 @@ def etl_intermediary_storage():
         coordinates = context["params"]["coordinates"]
         latitude = coordinates["latitude"]
         longitude = coordinates["longitude"]
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
         dag_id = context["dag"].dag_id
         task_id = context["task"].task_id
 
@@ -135,7 +135,7 @@ def etl_intermediary_storage():
             dict: The transformed data
         """
 
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
         dag_id = context["dag"].dag_id
         upstream_task_id = _EXTRACT_TASK_ID
         task_id = context["task"].task_id
@@ -188,11 +188,14 @@ def etl_intermediary_storage():
             transformed_data (dict): The transformed data
         """
         import csv
-        import io
+        import os
+        import tempfile
 
         from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-        dag_run_timestamp = context["ts"]
+        from include.postgres_copy_insert import copy_insert
+
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
         dag_id = context["dag"].dag_id
         upstream_task_id = _TRANSFORM_TASK_ID
 
@@ -207,25 +210,20 @@ def etl_intermediary_storage():
         # Load the data to Postgres
         hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-        csv_buffer = io.StringIO()
-        writer = csv.writer(csv_buffer)
-        writer.writerow(api_response.keys())
-        rows = zip(*api_response.values())
-        writer.writerows(rows)
-
-        csv_buffer.seek(0)
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as tmp:
+            writer = csv.writer(tmp)
+            writer.writerow(api_response.keys())
+            rows = zip(*api_response.values())
+            writer.writerows(rows)
+            tmp_path = tmp.name
 
         with open(f"{str(_SQL_DIR)}/copy_insert.sql") as f:
             sql = f.read()
         sql = sql.replace("{schema}", _POSTGRES_SCHEMA)
         sql = sql.replace("{table}", _POSTGRES_TRANSFORMED_TABLE)
 
-        conn = hook.get_conn()
-        cursor = conn.cursor()
-        cursor.copy_expert(sql=sql, file=csv_buffer)
-        conn.commit()
-        cursor.close()
-        conn.close()
+        copy_insert(hook, sql, tmp_path)
+        os.remove(tmp_path)
 
     _extract = extract()
     _transform = transform()

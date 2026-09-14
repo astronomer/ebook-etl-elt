@@ -102,7 +102,7 @@ def elt_intermediary_storage():
         coordinates = context["params"]["coordinates"]
         latitude = coordinates["latitude"]
         longitude = coordinates["longitude"]
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
         dag_id = context["dag"].dag_id
         task_id = context["task"].task_id
 
@@ -129,7 +129,7 @@ def elt_intermediary_storage():
         Load the data from S3 to Postgres
         """
 
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
         dag_id = context["dag"].dag_id
         upstream_task_id = _EXTRACT_TASK_ID
 

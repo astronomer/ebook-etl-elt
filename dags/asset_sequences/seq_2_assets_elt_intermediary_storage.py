@@ -50,7 +50,7 @@ def seq_2_start(context):
         {
             "latitude": context["params"]["coordinates"]["latitude"],
             "longitude": context["params"]["coordinates"]["longitude"],
-            "ts": context["ts"],
+            "ts": context["dag_run"].run_after.isoformat(),
         },
     )
 
@@ -114,7 +114,7 @@ def seq_2_extract(context):
     if str(context["dag_run"].run_type) == "DagRunType.MANUAL":
         latitude = context["params"]["coordinates"]["latitude"]
         longitude = context["params"]["coordinates"]["longitude"]
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
     # if the DAG is run as part of the asset sequence use the lat/long and timestamp of the upstream asset event
     else:
         # You can retrieve metadata from the triggering asset event.
@@ -158,7 +158,7 @@ def seq_2_load(context):
 
     # if the DAG is run manually use the time stamp of the manual run
     if str(context["dag_run"].run_type) == "DagRunType.MANUAL":
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
     # if the DAG is run as part of the asset sequence use the timestamp of the upstream asset event
     else:
         # You can retrieve metadata from the triggering asset event.

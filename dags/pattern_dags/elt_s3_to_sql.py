@@ -126,7 +126,7 @@ def elt_s3_to_sql():
         coordinates = context["params"]["coordinates"]
         latitude = coordinates["latitude"]
         longitude = coordinates["longitude"]
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
         dag_id = context["dag"].dag_id
         task_id = context["task"].task_id
 
