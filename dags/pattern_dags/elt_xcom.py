@@ -126,7 +126,7 @@ def elt_xcom():
             "out_table": _POSTGRES_TRANSFORMED_TABLE,
         },
         parameters={
-            "last_updated": "{{ ts }}",
+            "last_updated": "{{ dag_run.run_after.isoformat() }}",
         }
     )
 

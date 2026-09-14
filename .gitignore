@@ -12,3 +12,6 @@ airflow.db
 dev/
 include/postgres/
 include/minio/
+.astro/config.lock
+.astro/config.local.lock
+.astro/config.local.yaml

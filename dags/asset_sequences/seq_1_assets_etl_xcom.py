@@ -43,7 +43,7 @@ def seq_1_start(context):
     yield Metadata(Asset("seq_1_start"), {
             "latitude": context["params"]["coordinates"]["latitude"],
             "longitude": context["params"]["coordinates"]["longitude"],
-            "ts": context["ts"],
+            "ts": context["dag_run"].run_after.isoformat(),
         },
     )
 
@@ -93,7 +93,7 @@ def seq_1_extract(context):
     if str(context["dag_run"].run_type) == "DagRunType.MANUAL":
         latitude = context["params"]["coordinates"]["latitude"]
         longitude = context["params"]["coordinates"]["longitude"]
-        ts = context["ts"]
+        ts = context["dag_run"].run_after.isoformat()
     # if the DAG is run as part of the asset sequence use the lat/long and timestamp of the upstream asset event
     else:
         # You can retrieve metadata from the triggering asset event.
@@ -131,23 +131,26 @@ def seq_1_transform(context) -> dict:
     """
 
     # if the DAG is run manually use the time stamp of the manual run
+    upstream_run_id = None
     if str(context["dag_run"].run_type) == "DagRunType.MANUAL":
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
     # if the DAG is run as part of the asset sequence use the timestamp of the upstream asset event
     else:
         # You can retrieve metadata from the triggering asset event.
         # See: https://www.astronomer.io/docs/learn/airflow-datasets/#retrieving-asset-information-in-a-downstream-task
-        metadata_upstream = context["triggering_asset_events"][Asset("seq_1_extract")][
-            0
-        ].extra
+        upstream_event = context["triggering_asset_events"][Asset("seq_1_extract")][0]
 
-        dag_run_timestamp = metadata_upstream["ts"]
+        dag_run_timestamp = upstream_event.extra["ts"]
+        # asset-triggered runs have no logical_date, so "latest" xcom lookups are
+        # ambiguous across runs. Pin the pull to the exact upstream run instead.
+        upstream_run_id = upstream_event.source_run_id
 
     # To retrieve data pushed by an upstream asset perform a cross-dag xcom pull
     api_response = context["ti"].xcom_pull(
         dag_id="seq_1_extract",
         task_ids=["seq_1_extract"],
         key="return_value",
+        run_id=upstream_run_id,
         include_prior_dates=True,
     )[0]
 
@@ -186,34 +189,38 @@ def seq_1_load(context):
         transformed_data (dict): The transformed data
     """
     import csv
-    import io
+    import os
+    import tempfile
     from airflow.providers.postgres.hooks.postgres import PostgresHook
+
+    from include.postgres_copy_insert import copy_insert
+
+    # asset-triggered runs have no logical_date, so "latest" xcom lookups are
+    # ambiguous across runs. Pin the pull to the exact upstream run instead.
+    upstream_events = context["triggering_asset_events"].get(Asset("seq_1_transform"))
+    upstream_run_id = upstream_events[0].source_run_id if upstream_events else None
 
     transformed_data = context["ti"].xcom_pull(
         dag_id="seq_1_transform",
         task_ids=["seq_1_transform"],
         key="return_value",
+        run_id=upstream_run_id,
         include_prior_dates=True,
     )[0]
 
     hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-    csv_buffer = io.StringIO()
-    writer = csv.writer(csv_buffer)
-    writer.writerow(WEATHER_COL_ORDER)
-    rows = zip(*[transformed_data[col] for col in WEATHER_COL_ORDER])
-    writer.writerows(rows)
-
-    csv_buffer.seek(0)
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as tmp:
+        writer = csv.writer(tmp)
+        writer.writerow(WEATHER_COL_ORDER)
+        rows = zip(*[transformed_data[col] for col in WEATHER_COL_ORDER])
+        writer.writerows(rows)
+        tmp_path = tmp.name
 
     with open(f"{str(_SQL_DIR)}/copy_insert.sql") as f:
         sql = f.read()
     sql = sql.replace("{schema}", _POSTGRES_SCHEMA)
     sql = sql.replace("{table}", _POSTGRES_TRANSFORMED_TABLE)
 
-    conn = hook.get_conn()
-    cursor = conn.cursor()
-    cursor.copy_expert(sql=sql, file=csv_buffer)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    copy_insert(hook, sql, tmp_path)
+    os.remove(tmp_path)

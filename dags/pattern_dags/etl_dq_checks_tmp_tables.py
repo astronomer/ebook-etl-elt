@@ -95,7 +95,7 @@ def etl_dq_checks_tmp_tables():
         """
 
         time = api_response["hourly"]["time"]
-        dag_run_timestamp = context["ts"]
+        dag_run_timestamp = context["dag_run"].run_after.isoformat()
 
         transformed_data = {
             "temperature_2m": api_response["hourly"]["temperature_2m"],
@@ -138,31 +138,29 @@ def etl_dq_checks_tmp_tables():
                 transformed_data (dict): The transformed data
             """
             import csv
-            import io
+            import os
+            import tempfile
 
             from airflow.providers.postgres.hooks.postgres import PostgresHook
 
+            from include.postgres_copy_insert import copy_insert
+
             hook = PostgresHook(postgres_conn_id=_POSTGRES_CONN_ID)
 
-            csv_buffer = io.StringIO()
-            writer = csv.writer(csv_buffer)
-            writer.writerow(WEATHER_COL_ORDER)
-            rows = zip(*[transformed_data[col] for col in WEATHER_COL_ORDER])
-            writer.writerows(rows)
-
-            csv_buffer.seek(0)
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as tmp:
+                writer = csv.writer(tmp)
+                writer.writerow(WEATHER_COL_ORDER)
+                rows = zip(*[transformed_data[col] for col in WEATHER_COL_ORDER])
+                writer.writerows(rows)
+                tmp_path = tmp.name
 
             with open(f"{str(_SQL_DIR)}/copy_insert.sql") as f:
                 sql = f.read()
             sql = sql.replace("{schema}", _POSTGRES_SCHEMA)
             sql = sql.replace("{table}", _POSTGRES_TMP_TABLE)
 
-            conn = hook.get_conn()
-            cursor = conn.cursor()
-            cursor.copy_expert(sql=sql, file=csv_buffer)
-            conn.commit()
-            cursor.close()
-            conn.close()
+            copy_insert(hook, sql, tmp_path)
+            os.remove(tmp_path)
 
         _load_to_tmp = load_to_tmp(_transform)
 

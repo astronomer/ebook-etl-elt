@@ -10,9 +10,9 @@ The containers are:
 - Postgres, port 5432: Airflow's Metadata Database
 - API server, port 8080: The Airflow component responsible for rendering the Airflow UI and serving several APIs
 - Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
+- Dag Processor: The Airflow component responsible for parsing Dags
 - Triggerer: The Airflow component responsible for triggering deferred tasks
-- Postgres, port 5433: A Postgres database for the demo data
+- Postgres, port 5434: A Postgres database for the demo data
 - MinIO, port 9000: An S3-compatible object storage service for the demo data
 
 To connect Airflow to both the Postgres database and MinIO, create a `.env` file in the root directory of the project with the exact contents of the `.env.example` file. Note that you need to restart the Airflow instance with `astro dev restart` after creating the `.env` file for the changes to take effect.
@@ -20,27 +20,27 @@ To connect Airflow to both the Postgres database and MinIO, create a `.env` file
 > [!TIP]
 > You need to be on at least version 1.34.0 of the Astro CLI in oder to run this repo. You can check your version with `astro version` and upgrade with `brew upgrade astro`
 
-All the DAGs run without any further setup or tools needed! 
+All the Dags run without any further setup or tools needed! 
 
 ## Content
 
 This repository contains:
 
-- [`dag-factory_dags`](/dags/dag-factory_dags/): A folder containing the code necessary to generate 3 DAGs with the `dag-factory` package.
-    - `config_file.yml`: Config file creating the 3 DAGs.
-    - `generate_dags.py`: The code to generate DAGs from the config file.
-- [`helper`](/dags//helper/): This folder contains two DAGs meant to help you explore and develop.
-    - `query_tables`: A DAG that queries the tables in the Postgres database to return the number of records for each table.
-    - `drop_tables_postgres`: A DAG that drops all the tables in the Postgres database.
-- [`modularized_task_groups`](/dags/modularized_task_groups/): This folder contains a DAG with a modularized task group, stored in [`include/custom_task_group/etl_task_group.py](/include/custom_task_group/etl_task_group.py).
-- [`pattern_dags`](/dags/pattern_dags/): Contains several DAGs showing different ETL and ELT patterns. They all use the Open Meteo API as a source system and load data to Postgres. 
+- [`dag-factory_dags`](/dags/dag-factory_dags/): A folder containing the code necessary to generate 3 Dags with the `dag-factory` package.
+    - `config_file.yml`: Config file creating the 3 Dags.
+    - `generate_dags.py`: The code to generate Dags from the config file.
+- [`helper`](/dags//helper/): This folder contains two Dags meant to help you explore and develop.
+    - `query_tables`: A Dag that queries the tables in the Postgres database to return the number of records for each table.
+    - `drop_tables_postgres`: A Dag that drops all the tables in the Postgres database.
+- [`modularized_task_groups`](/dags/modularized_task_groups/): This folder contains a Dag with a modularized task group, stored in [`include/custom_task_group/etl_task_group.py](/include/custom_task_group/etl_task_group.py).
+- [`pattern_dags`](/dags/pattern_dags/): Contains several Dags showing different ETL and ELT patterns. They all use the Open Meteo API as a source system and load data to Postgres. 
 
 All supporting SQL code is stored in the include folder.
 
-- [`include/dag_factory`](/include/dag_factory/): Contains the SQL code for the 3 DAG factory tasks.
+- [`include/dag_factory`](/include/dag_factory/): Contains the SQL code for the 3 Dag factory tasks.
 - [`include/sql`](/include/sql/): Contains the SQL code for all other tasks.
 
-The SQL code is repetitive for demo purposes, meaning you can manipulate the code for just one DAG to explore the DAGs without affecting other DAGs. In a real-world scenario you would likely modularize the SQL code further and avoid repetition.
+The SQL code is repetitive for demo purposes, meaning you can manipulate the code for just one Dag to explore the Dags without affecting other Dags. In a real-world scenario you would likely modularize the SQL code further and avoid repetition.
 
 ## How to run the demo
 
@@ -48,8 +48,8 @@ The SQL code is repetitive for demo purposes, meaning you can manipulate the cod
 2. Make sure you have the [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli) installed and are at least on version 1.34.0.
 3. Copy the `.env.example` file to a new file called `.env`. If you want to use a custom XCom backend with MinIO uncomment the last 4 lines in the `.env` file.
 4. Run `astro dev start` to start the Airflow instance. The webserver with the Airflow UI will be available at `localhost:8080`.
-5. Run any DAG. They all are independent from each other.
-7. Use the `query_tables` DAG to check the number of records in the tables.
+5. Run any Dag or Dag sequence.
+6. Use the `query_tables` Dag to check the number of records in the tables.
 
 If you'd like to directly interact with the Postgres database, you can use the following commands to connect to the database:
 
